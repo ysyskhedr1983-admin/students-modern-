@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول الطلاب - الأكاديمية الحديثة</title>
+    <!-- Include LZ-String for compression -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: #f0f2f5;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            overflow: hidden;
+            background: white;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .logo-content {
+            text-align: center;
+        }
+
+        .logo-content .academy-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ecf0f1;
+        }
+
+        .logo-content .since {
+            font-size: 12px;
+            color: #bdc3c7;
+        }
+
+        .logo-content .arabic-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #ecf0f1;
+        }
+
+        .title-section {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .main-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ecf0f1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .academic-year {
+            font-size: 20px;
+            color: #FFD700;
+            font-weight: bold;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            border: 2px solid #FFD700;
+        }
+
+        /* Public View Styles */
+        .public-view {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2196F3;
+            border-right: 5px solid #2196F3;
+        }
+
+        .public-view h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1565c0;
+            font-size: 24px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 300px;
+            transition: border 0.3s;
+            text-align: right;
+        }
+
+        input[type="text"]:focus {
+            border-color: #2196F3;
+            outline: none;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .search-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .search-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .sample-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .sample-btn:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .student-info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .schedule-table th {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            font-size: 16px;
+        }
+
+        .schedule-table td {
+            height: 100px;
+            vertical-align: top;
+            background: #fafafa;
+        }
+
+        .schedule-table td:first-child {
+            background: #e3f2fd;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .course-info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 10px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: right;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .course-info strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+
+        .status {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .success {
+            background: #bbdefb;
+            color: #0d47a1;
+            border: 1px solid #90caf9;
+        }
+
+        .error {
+            background: #ffcdd2;
+            color: #b71c1c;
+            border: 1px solid #ef9a9a;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .instructions ul {
+            margin-right: 20px;
+            margin-top: 10px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .logo-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .main-title {
+                font-size: 22px;
+            }
+            
+            .academic-year {
+                font-size: 16px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            input[type="text"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Logo and Title -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="mam-logo-light-roboto.bmp" alt="Modern Academy Logo" 
+                         onerror="this.style.display='none'; this.parentNode.innerHTML='M<br>A'; this.parentNode.style.background='linear-gradient(135deg, #2196F3, #1976D2)'; this.parentNode.style.display='flex'; this.parentNode.style.flexDirection='column'; this.parentNode.style.justifyContent='center'; this.parentNode.style.alignItems='center'; this.parentNode.style.color='white'; this.parentNode.style.fontWeight='bold';">
+                </div>
+                <div class="logo-content">
+                    <div class="academy-name">Modern Academy</div>
+                    <div class="since">Since 1993</div>
+                    <div class="arabic-name">مودرن أكاديمي</div>
+                </div>
+            </div>
+            
+            <div class="title-section">
+                <div class="main-title">جدول العام الدراسي 2026 الترم الأول</div>
+                <div class="academic-year">2026 - الفصل الدراسي الأول</div>
+            </div>
+            
+            <div class="logo-section">
+                <div class="logo" style="background: linear-gradient(135deg, #2196F3, #1976D2); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold;">
+                    <div style="font-size: 12px;">النظام</div>
+                    <div style="font-size: 10px;">الإلكتروني</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Public View for Students -->
+        <div class="public-view">
+            <h3>🔍 استعلام عن جدول الطالب</h3>
+            <div class="search-box">
+                <input type="text" id="studentId" placeholder="أدخل رقمك الجامعي">
+                <button class="search-btn" onclick="searchStudent()">عرض الجدول</button>
+                <button class="sample-btn" onclick="showHelp()">❓ مساعدة</button>
+                <button class="sample-btn" onclick="checkDataStatus()">📊 حالة البيانات</button>
+            </div>
+            
+            <div class="instructions">
+                <p><strong>💡 تعليمات الاستخدام:</strong></p>
+                <ul>
+                    <li>أدخل <strong>رقمك الجامعي</strong> ثم اضغط "عرض الجدول"</li>
+                    <li>سيعرض النظام جدولك الأسبوعي كاملاً</li>
+                    <li>إذا واجهتك مشكلة، تواصل مع شؤون الطلاب</li>
+                    <li>للتجربة، يمكنك استخدام الأرقام: 1001, 1002, 1003</li>
+                    <li>اضغط "حالة البيانات" للتحقق من وجود البيانات في النظام</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="student-info" id="studentInfo">
+            <h3>👤 معلومات الطالب</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>رقم الطالب:</strong> <span id="displayStudentId">-</span>
+                </div>
+                <div class="info-item">
+                    <strong>الاسم:</strong> <span id="displayStudentName">-</span>
+                </div>
+                <div class="info-item">
+                    <strong>التخصص:</strong> <span id="displayStudentSpec">-</span>
+                </div>
+                <div class="info-item">
+                    <strong>السكشن:</strong> <span id="displaySectionNo">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="statusMessage" class="status"></div>
+        
+        <table class="schedule-table" id="scheduleTable">
+            <thead>
+                <tr>
+                    <th>المحاضرة</th>
+                    <th>السبت</th>
+                    <th>الأحد</th>
+                    <th>الإثنين</th>
+                    <th>الثلاثاء</th>
+                    <th>الأربعاء</th>
+                    <th>الخميس</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody">
+                <!-- Schedule will be populated here -->
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>© 2024 الأكاديمية الحديثة - جميع الحقوق محفوظة</p>
+            <p>للدعم الفني: <a href="mailto:support@modern-academy.edu">support@modern-academy.edu</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Global data storage - will be loaded from main system
+        let studentsData = [];
+        let scheduleData = [];
+        
+        // ARABIC DAYS: السبت to الخميس
+        const days = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+        
+        // 7 LECTURES
+        const lectures = [1, 2, 3, 4, 5, 6, 7];
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeScheduleTable();
+            loadDataFromMainSystem();
+            showStatus('🔍 أدخل رقمك الجامعي لعرض جدولك', 'success');
+        });
+
+        // Create empty schedule table
+        function initializeScheduleTable() {
+            const scheduleBody = document.getElementById('scheduleBody');
+            scheduleBody.innerHTML = '';
+            
+            lectures.forEach(lecture => {
+                const row = document.createElement('tr');
+                
+                // Lecture number cell
+                const lectureCell = document.createElement('td');
+                lectureCell.textContent = `محاضرة ${lecture}`;
+                lectureCell.style.fontWeight = 'bold';
+                row.appendChild(lectureCell);
+                
+                // Day cells
+                days.forEach(day => {
+                    const dayCell = document.createElement('td');
+                    dayCell.id = `cell-${day}-${lecture}`;
+                    dayCell.innerHTML = '<div style="color: #999; font-size: 11px;">-</div>';
+                    row.appendChild(dayCell);
+                });
+                
+                scheduleBody.appendChild(row);
+            });
+        }
+
+        // Load data from main system (shared localStorage) - IMPROVED VERSION
+        function loadDataFromMainSystem() {
+            try {
+                const compressedData = localStorage.getItem('academyData');
+                if (compressedData) {
+                    console.log('📥 البيانات موجودة في التخزين المحلي، جاري فك الضغط...');
+                    
+                    let data;
+                    // Try multiple decompression methods
+                    try {
+                        // First try LZString decompression
+                        if (typeof LZString !== 'undefined') {
+                            const decompressed = LZString.decompress(compressedData);
+                            if (decompressed) {
+                                data = JSON.parse(decompressed);
+                                console.log('✅ تم تحميل البيانات باستخدام LZString');
+                            } else {
+                                throw new Error('LZString decompression failed');
+                            }
+                        } else {
+                            throw new Error('LZString not available');
+                        }
+                    } catch (lzError) {
+                        console.log('❌ فشل فك الضغط باستخدام LZString، جاري المحاولة بدون ضغط...');
+                        
+                        try {
+                            // Try direct JSON parse (in case data is not compressed)
+                            data = JSON.parse(compressedData);
+                            console.log('✅ تم تحميل البيانات بدون ضغط');
+                        } catch (jsonError) {
+                            console.error('❌ فشل تحميل البيانات:', jsonError);
+                            showStatus('❌ خطأ في تنسيق البيانات المخزنة', 'error');
+                            return;
+                        }
+                    }
+                    
+                    studentsData = data.students || [];
+                    scheduleData = data.schedule || [];
+                    
+                    console.log(`📊 تم تحميل ${studentsData.length} طالب و ${scheduleData.length} مدخل في الجدول`);
+                    
+                    if (studentsData.length > 0 || scheduleData.length > 0) {
+                        showStatus(`✅ النظام جاهز - ${studentsData.length} طالب مسجل، ${scheduleData.length} محاضرة`, 'success');
+                    } else {
+                        showStatus('⚠️ لا توجد بيانات حالياً في النظام', 'warning');
+                    }
+                } else {
+                    console.log('📭 لا توجد بيانات في التخزين المحلي');
+                    showStatus('📭 لا توجد بيانات في النظام. الرجاء تحميل البيانات من لوحة المشرف أولاً.', 'warning');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تحميل البيانات:', error);
+                showStatus('❌ خطأ في تحميل البيانات: ' + error.message, 'error');
+            }
+        }
+
+        // Check data status
+        function checkDataStatus() {
+            const compressedData = localStorage.getItem('academyData');
+            if (!compressedData) {
+                showStatus('❌ لا توجد بيانات في النظام. الرجاء تحميل البيانات من لوحة المشرف أولاً.', 'error');
+                return;
+            }
+            
+            let dataSize = compressedData.length;
+            let dataInfo = '';
+            
+            try {
+                // Try to decompress and get info
+                if (typeof LZString !== 'undefined') {
+                    const decompressed = LZString.decompress(compressedData);
+                    if (decompressed) {
+                        const data = JSON.parse(decompressed);
+                        dataInfo = ` | الطلاب: ${data.students?.length || 0} | الجدول: ${data.schedule?.length || 0}`;
+                    }
+                }
+            } catch (e) {
+                // Ignore decompression errors for status check
+            }
+            
+            showStatus(
+                `📊 حالة البيانات: حجم التخزين: ${Math.round(dataSize / 1024)} KB${dataInfo} | ` +
+                `آخر تحديث: ${new Date().toLocaleString('ar-EG')}`, 
+                'success'
+            );
+        }
+
+        // Search student function - IMPROVED VERSION
+        function searchStudent() {
+            const studentId = document.getElementById('studentId').value.trim();
+            
+            if (!studentId) {
+                showStatus('❌ الرجاء إدخال الرقم الجامعي', 'error');
+                return;
+            }
+            
+            // Reload data first to ensure we have latest
+            loadDataFromMainSystem();
+            
+            if (studentsData.length === 0) {
+                showStatus('❌ لا توجد بيانات طلاب في النظام', 'error');
+                return;
+            }
+            
+            if (scheduleData.length === 0) {
+                showStatus('❌ لا توجد بيانات جدول في النظام', 'error');
+                return;
+            }
+            
+            console.log('🔍 البحث عن الطالب:', studentId);
+            console.log('📋 بيانات الطلاب المتاحة:', studentsData);
+            console.log('📅 بيانات الجدول المتاحة:', scheduleData.length, 'مدخل');
+            
+            // Find student - more flexible matching
+            const student = studentsData.find(s => {
+                const studentIdStr = s.id ? s.id.toString() : '';
+                const searchId = studentId.toString();
+                return studentIdStr === searchId || 
+                       studentIdStr.toLowerCase() === searchId.toLowerCase();
+            });
+            
+            if (!student) {
+                console.log('❌ الطالب غير موجود في البيانات:', studentId);
+                console.log('🔍 الأرقام المتاحة:', studentsData.map(s => s.id));
+                showStatus(`❌ الرقم الجامعي ${studentId} غير مسجل في النظام`, 'error');
+                return;
+            }
+            
+            // Display student information
+            displayStudentInfo(student);
+            
+            // Display schedule
+            displayStudentSchedule(studentId);
+            
+            showStatus(`✅ تم تحميل جدول الطالب ${student.name}`, 'success');
+        }
+
+        // Display student information
+        function displayStudentInfo(student) {
+            document.getElementById('displayStudentId').textContent = student.id || '-';
+            document.getElementById('displayStudentName').textContent = student.name || '-';
+            document.getElementById('displayStudentSpec').textContent = student.spec || '-';
+            document.getElementById('displaySectionNo').textContent = student.section || '-';
+            
+            document.getElementById('studentInfo').style.display = 'block';
+        }
+
+        // Display student schedule - IMPROVED VERSION
+        function displayStudentSchedule(studentId) {
+            console.log('📅 جاري تحميل الجدول للطالب:', studentId);
+            
+            // Clear all cells first
+            days.forEach(day => {
+                lectures.forEach(lecture => {
+                    const cell = document.getElementById(`cell-${day}-${lecture}`);
+                    cell.innerHTML = '<div style="color: #999; font-size: 11px;">-</div>';
+                    cell.style.backgroundColor = '';
+                });
+            });
+            
+            // Find student's schedule - more flexible matching
+            const studentSchedule = scheduleData.filter(item => {
+                const itemId = item.id ? item.id.toString() : '';
+                const searchId = studentId.toString();
+                return itemId === searchId || 
+                       itemId.toLowerCase() === searchId.toLowerCase();
+            });
+            
+            console.log('📋 المحاضرات الموجودة للطالب:', studentSchedule);
+            
+            if (studentSchedule.length === 0) {
+                console.log('⚠️ لا يوجد جدول للطالب:', studentId);
+                showStatus(`⚠️ لا يوجد جدول للطالب ${studentId}`, 'warning');
+                return;
+            }
+            
+            // Populate schedule
+            let scheduledCount = 0;
+            studentSchedule.forEach(item => {
+                const day = item.d || item.day;
+                const lectureNum = item.l || item.lecture || item.lecture_no;
+                
+                if (day && lectureNum) {
+                    const cell = document.getElementById(`cell-${day}-${lectureNum}`);
+                    if (cell) {
+                        const courseDiv = document.createElement('div');
+                        courseDiv.className = 'course-info';
+                        courseDiv.innerHTML = `
+                            <strong>${item.c || item.course || item.MAT_NAME || 'غير معروف'}</strong>
+                            <div>👨‍🏫 ${item.p || item.professor || item.DR_NAME || 'غير معروف'}</div>
+                            <div>🕐 ${item.t || item.time || item.TIME || 'غير معروف'}</div>
+                        `;
+                        cell.innerHTML = '';
+                        cell.appendChild(courseDiv);
+                        cell.style.backgroundColor = '#e3f2fd';
+                        scheduledCount++;
+                    }
+                }
+            });
+            
+            console.log(`✅ تم جدولة ${scheduledCount} محاضرة للطالب`);
+            
+            // Show the schedule table
+            document.getElementById('scheduleTable').style.display = 'table';
+        }
+
+        // Show help information
+        function showHelp() {
+            showStatus(
+                `ℹ️ <strong>تعليمات الاستخدام:</strong><br>
+                1. أدخل رقمك الجامعي كما هو مسجل في النظام<br>
+                2. اضغط "عرض الجدول" لمشاهدة جدولك الكامل<br>
+                3. الجدول يظهر المحاضرات من الساعة 8 صباحاً حتى 5 مساءً<br>
+                4. اضغط "حالة البيانات" للتحقق من وجود البيانات<br>
+                5. للاستفسارات: <strong>شؤون الطلاب</strong>`,
+                'success'
+            );
+        }
+
+        // Show status messages
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.innerHTML = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        // Allow Enter key to search
+        document.getElementById('studentId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudent();
+            }
+        });
+
+        // Auto-focus on input
+        document.getElementById('studentId').focus();
+    </script>
+</body>
+</html>

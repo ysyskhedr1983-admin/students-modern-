@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الجداول - الأكاديمية الحديثة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            direction: rtl; height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .container { 
+            background: white; padding: 40px; border-radius: 15px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center;
+            max-width: 500px; width: 90%;
+        }
+        .logo { 
+            width: 100px; height: 100px; margin: 0 auto 20px; 
+            background: #667eea; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; color: white;
+            font-size: 24px; font-weight: bold;
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .btn { 
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            text-decoration: none; border-radius: 8px; font-weight: bold;
+            transition: all 0.3s; text-align: center;
+        }
+        .btn-admin { 
+            background: #ff6b6b; color: white; border: 2px solid #ff6b6b;
+        }
+        .btn-student { 
+            background: #2196F3; color: white; border: 2px solid #2196F3;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">MA</div>
+        <h1>نظام الجداول الدراسية</h1>
+        <p class="subtitle">الأكاديمية الحديثة - 2024</p>
+        
+        <a href="admin-system.html" class="btn btn-admin">
+            🔧 دخول المشرفين
+        </a>
+        <a href="student-view.html" class="btn btn-student">
+            🎓 دخول الطلاب
+        </a>
+        
+        <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <p style="color: #666; font-size: 14px;">
+                <strong>اختر نوع الدخول:</strong><br>
+                المشرفين: لتحميل البيانات وإدارة النظام<br>
+                الطلاب: للاستعلام عن الجداول الدراسية
+            </p>
+        </div>
+    </div>
+</body>
+</html>
